@@ -1,0 +1,27 @@
+{
+  "name": "ng-multibind",
+  "main": "ng-multibind.js",
+  "version": "0.0.1",
+  "homepage": "https://github/dfci-cccb/ng-multibind",
+  "authors": [
+    "levk@jimmy.harvard.edy"
+  ],
+  "description": "Angular multibindings",
+  "moduleType": [
+    "amd"
+  ],
+  "keywords": [
+    "angular"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.3.13"
+  }
+}
