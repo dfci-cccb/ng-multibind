@@ -1,7 +1,5 @@
 /* The MIT License (MIT)
  *
- * Copyright (c) <year> <copyright holders>
- *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -21,60 +19,73 @@
  * THE SOFTWARE.
  */
 
-(function (bindings, createModule) {
-  angular.module = function () {
-    var module = createModule.apply (createModule, arguments);
-    
-    module.map = function (key) {
-      return (bindings[key] || (bindings[key] = (function (providers) {
-        module.factory (key, [ '$injector', function ($injector) {
-          var elements = {};
-          Object.keys (providers).forEach (function (name) {
-            elements[name] = $injector.invoke (providers[name]);
-          });
-          return elements;
-        } ]);
-            
-        return {
-          providers: providers,
-          binder: {
-            factory: function (name, factory) {
-              providers[name] = factory;
-              return module;
-            },
-            value: function (name, value) {
-              providers[name] = function () { return value; }
-              return module;
-            }
-          }
+(function (define) {
+  define ('ng-multibind', [ 'angular' ], function (ng) {
+    ng = ng || angular;
+    (function (bindings, createModule) {
+      return ng.module = function () {
+        var module = createModule.apply (createModule, arguments);
+
+        module.map = function (key) {
+          return (bindings[key] || (bindings[key] = (function (providers) {
+            module.factory (key, [ '$injector', function ($injector) {
+              var elements = {};
+              Object.keys (providers).forEach (function (name) {
+                elements[name] = $injector.invoke (providers[name]);
+              });
+              return elements;
+            } ]);
+
+            return {
+              providers : providers,
+              binder : {
+                factory : function (name, factory) {
+                  providers[name] = factory;
+                  return module;
+                },
+                value : function (name, value) {
+                  providers[name] = function () {
+                    return value;
+                  };
+                  return module;
+                }
+              }
+            };
+          }) ({}))).binder;
         };
-      }) ({}))).binder;
-    };
-    
-    module.array = function (key) {
-      return (bindings[key] || (bindings[key] = (function (providers) {
-        module.factory (key, [ '$injector', function ($injector) {
-          var elements = [];
-          providers.forEach (function (provider) { elements.push ($injector.invoke (provider)); });
-          return elements;  
-        } ]);
-        
-        return {
-          providers: providers,
-          binder: {
-            factory: function (factory) {
-              providers.push (factory);
-              return module;
-            },
-            value: function (value) {
-              providers.push (function () { return value; });
-              return module;
-            }
-          }
+
+        module.array = function (key) {
+          return (bindings[key] || (bindings[key] = (function (providers) {
+            module.factory (key, [ '$injector', function ($injector) {
+              var elements = [];
+              providers.forEach (function (provider) {
+                elements.push ($injector.invoke (provider));
+              });
+              return elements;
+            } ]);
+
+            return {
+              providers : providers,
+              binder : {
+                factory : function (factory) {
+                  providers.push (factory);
+                  return module;
+                },
+                value : function (value) {
+                  providers.push (function () {
+                    return value;
+                  });
+                  return module;
+                }
+              }
+            };
+          }) ([]))).binder;
         };
-      }) ([]))).binder;
-    };
-    
-    return module;
-  }
-}) ({}, angular.module);
+
+        return module;
+      };
+    }) ({}, ng.module);
+  });
+}) (typeof (define) !== 'undefined' ? define : function (name, deps, fn) {
+  fn ();
+});
